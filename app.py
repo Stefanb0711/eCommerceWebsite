@@ -40,8 +40,6 @@ class Customer(UserMixin, db.Model):
 
 
 
-
-
 class Order(UserMixin, db.Model):
     __tablename__ = "orders"
     id = db.Column(db.Integer, primary_key=True)
@@ -49,17 +47,21 @@ class Order(UserMixin, db.Model):
     customer_id = db.Column(db.Integer, db.ForeignKey("customer.id"))
     customer = relationship("Customer", back_populates="orders")
 
+    products = relationship("Products", back_populates="order")
 
 
-"""class Products(db.Model):
+
+class Products(db.Model):
     __tablename__ = "products"
-    id = db.Column(db.Integer)
-    product_name = db.Column(db.String(200))
-    post_id = db.Column(db.String(200))
-    order_id = db.ForeignKey(db.Integer, "orders")
+    id = db.Column(db.Integer, primary_key=True)
+    product_name = db.Column(db.String(200) , nullable=False)
 
-    order = relationship("Customer", back_populates="orders")
-"""
+    order_id = db.Column(db.Integer, db.ForeignKey("orders.id"))
+
+    order = relationship("Order", back_populates="products")
+
+
+
 
 
 
