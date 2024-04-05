@@ -83,7 +83,7 @@ class LogInForm(FlaskForm):
     password = PasswordField('Passwort', validators=[DataRequired()])
     submit = SubmitField('Anmelden')
 
-
+total_price = 0
 
 products = {
     "images" : ["/static/Pics/ProteinPizza.webp", "/static/Pics/ProteinPudding.webp", "/static/Pics/Proteinriegel.jpg", "/static/Pics/ProteinriegelSchwarz.jpg", "/static/Pics/Proteinshake.jpg", "/static/Pics/Proteinspaghetti.webp"],
@@ -95,17 +95,21 @@ products = {
 shopping_cart = {
     "product_images": [],
     "product_titles": [],
-    "product_prices": []
+    "product_prices": [],
+    "product_amounts" : []
 }
 
 @app.route('/', methods=['GET', 'POST'])
 def start():  # put application's code here
 
     if request.method == 'POST':
-        amount_product = request.form.get("qty")
+        #amount_product = request.form.get("qty")
 
+        """current_product_image = request.args.get("product_image")
+        current_product_title = request.args.get("product_title")
+        current_product_price = request.args.get("product_price")"""
 
-        return redirect(url_for('shopping_cart_site', amount_product = amount_product ))
+        return redirect(url_for('shopping_cart_site'))
 
     return render_template("start.html", products=products)
 
@@ -189,21 +193,29 @@ def register():
 
 @app.route('/warenkorb', methods=['GET', 'POST'])
 def shopping_cart_site():
+    global total_price
 
-    product_image = request.args.get("product_image")
-    product_price = request.args.get("product_price")
-    product_title = request.args.get('product_title')
-    product_amount = request.args.get('amount_product')
-
-    print(f"Product amount {product_amount}")
-
+    product_image = request.form["product_image"]
+    product_price = request.form["product_price"]
+    product_title = request.form["product_title"]
 
 
     shopping_cart["product_images"].append(product_image)
-    shopping_cart["product_prices"].append(int(product_price))
+    shopping_cart["product_prices"].append(product_price)
     shopping_cart["product_titles"].append(product_title)
+    #shopping_cart["product_amounts"].append(int(product_amount))
 
-    total_price = sum(shopping_cart["product_prices"])
+    print(f"Shopping Cart Product Images: {shopping_cart['product_images']}")
+
+    for _ in range(len(shopping_cart["product_prices"])):
+        shopping_cart["product_prices"][_] = int(shopping_cart["product_prices"][_])
+
+    for _ in range(len(shopping_cart["product_images"])):
+        total_price += shopping_cart["product_prices"][_] * shopping_cart["product_amounts"][_]
+
+    print(f"Gesamtpreis: {total_price}")
+
+    #total_price = sum(shopping_cart["product_prices"])
 
 
     return render_template("warenkorb.html", shopping_cart = shopping_cart, total_price = total_price)
