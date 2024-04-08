@@ -52,7 +52,7 @@ class Order(db.Model):
 
     customer_id = db.Column(db.Integer, db.ForeignKey("customer.id"))
     customer = relationship("Customer", back_populates="orders")
-
+    total_sum = db.Column(db.Float, nullable=False)
     products = relationship("Products", back_populates="order")
 
 
@@ -61,7 +61,7 @@ class Products(db.Model):
     __tablename__ = "products"
     id = db.Column(db.Integer, primary_key=True)
     product_name = db.Column(db.String(200) , nullable=False)
-
+    product_price = db.Column(db.String(200), nullable= False)
     order_id = db.Column(db.Integer, db.ForeignKey("orders.id"))
 
     order = relationship("Order", back_populates="products")
@@ -194,24 +194,24 @@ def register():
 @app.route('/warenkorb', methods=['GET', 'POST'])
 def shopping_cart_site():
     global total_price
+    total_price = 0
 
     product_image = request.form["product_image"]
     product_price = request.form["product_price"]
     product_title = request.form["product_title"]
+    product_amount = request.form["qty"]
 
 
     shopping_cart["product_images"].append(product_image)
-    shopping_cart["product_prices"].append(product_price)
+    shopping_cart["product_prices"].append(int(product_price))
     shopping_cart["product_titles"].append(product_title)
-    #shopping_cart["product_amounts"].append(int(product_amount))
+    shopping_cart["product_amounts"].append(int(product_amount))
 
-    print(f"Shopping Cart Product Images: {shopping_cart['product_images']}")
+    print(f"Product Amount: {product_amount}")
 
-    for _ in range(len(shopping_cart["product_prices"])):
-        shopping_cart["product_prices"][_] = int(shopping_cart["product_prices"][_])
 
     for _ in range(len(shopping_cart["product_images"])):
-        total_price += shopping_cart["product_prices"][_] * shopping_cart["product_amounts"][_]
+        total_price += (shopping_cart["product_prices"][_] * shopping_cart["product_amounts"][_])
 
     print(f"Gesamtpreis: {total_price}")
 
@@ -220,6 +220,16 @@ def shopping_cart_site():
 
     return render_template("warenkorb.html", shopping_cart = shopping_cart, total_price = total_price)
 
+
+@app.route("/bezahlen")
+def bezahlen():
+
+    print(current_user.id)
+
+    for product in range(shopping_cart["product_prices"]):
+        new_product = Products(customer_id = current_user.id, product_name = shopping_cart_site["product_name"], product_price = products[""])
+
+    return render_template("bezahlung.html")
 
 
 @app.route("/logout")
