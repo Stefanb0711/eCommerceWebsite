@@ -62,6 +62,7 @@ class Products(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     product_name = db.Column(db.String(200) , nullable=False)
     product_price = db.Column(db.String(200), nullable= False)
+    quantity = db.Column(db.Integer, nullable=False)
     order_id = db.Column(db.Integer, db.ForeignKey("orders.id"))
 
     order = relationship("Order", back_populates="products")
@@ -169,7 +170,7 @@ def register():
         register_username = request.form["username"]
         register_password = request.form["password"]
 
-        if Customer.query.filter_by(username = register_username).first() or Customer.query.filter_by(email = register_email_adress):
+        if Customer.query.filter_by(username = register_username).first() or Customer.query.filter_by(email = register_email_adress).first():
             flash("Der Benutzername oder die Email-adresse existieren bereits. Probieren Sie was anderes aus")
         else:
 
@@ -192,9 +193,12 @@ def register():
 
 
 @app.route('/warenkorb', methods=['GET', 'POST'])
+#@login_required
 def shopping_cart_site():
     global total_price
     total_price = 0
+
+
 
     product_image = request.form["product_image"]
     product_price = request.form["product_price"]
@@ -222,12 +226,29 @@ def shopping_cart_site():
 
 
 @app.route("/bezahlen")
+@login_required
 def bezahlen():
+
 
     print(current_user.id)
 
-    for product in range(shopping_cart["product_prices"]):
-        new_product = Products(customer_id = current_user.id, product_name = shopping_cart_site["product_name"], product_price = products[""])
+    new_order = Order(customer_id = current_user.id, total_sum = total_price)
+    db.session.add(new_order)
+    db.session.commit()
+
+
+    this_order = Order.query.order_by(Order.id.desc()).first()
+    print(f"ThsiOrderID: {this_order.id}")
+
+    for _ in range(len(shopping_cart["product_prices"])):
+        new_product = Products(product_name = shopping_cart["product_titles"][_], product_price = shopping_cart["product_prices"][_], order_id = this_order.id, quantity = shopping_cart["product_amounts"][_])
+        db.session.add(new_product)
+        db.session.commit()
+
+    shopping_cart["product_images"].clear()
+    shopping_cart["product_prices"].clear()
+    shopping_cart["product_titles"].clear()
+    shopping_cart["product_amounts"].clear()
 
     return render_template("bezahlung.html")
 

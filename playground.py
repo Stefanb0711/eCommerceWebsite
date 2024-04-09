@@ -3,4 +3,7 @@ ein_dict = {
 
 }
 
+ein_dict["Name"].clear()
+
+
 print(ein_dict["Name"])
