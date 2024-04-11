@@ -1,0 +1,48 @@
+{%  extends 'base.html' %}
+
+{% block content %}
+
+
+    {% if not current_user.is_authenticated %}
+          <div style="">
+              <a href="{{ url_for('login') }}"><button type="button" class="btn btn-primary">Einloggen</button></a>
+              <a href="{{ url_for('register') }}"><button type="button" class="btn btn-light">Registrieren</button></a>
+          </div>
+      {% endif %}
+
+    {% if not shopping_cart['product_images'] %}
+        <h3> Der Warenkorb ist leer</h3>
+
+    {% else %}
+        <ul class="list-group d-flex justify-content-between flex-wrap" style="display: flex; flex-direction: column;">
+        {% for count in range(shopping_cart['product_titles'] | length ) %}
+            <li class="list-group-item d-flex align-items-center">
+                <div>
+                    <span>{{ shopping_cart['product_titles'][count] }}</span>
+                    <span>{{ shopping_cart['product_prices'][count] }}$</span>
+                    <span>{{ shopping_cart["product_amounts"][count] }}</span>
+                </div>
+                <img src="{{ shopping_cart['product_images'][count] }}" width="100">
+            </li>
+        {% endfor %}
+        </ul>
+
+        <div style="display: flex; padding-top: 50px;">
+            <h3 style="padding-right: 20px;"> Summe : {{ total_price }}€ </h3>
+
+            {% if not current_user.is_authenticated %}
+            <a href="{{ url_for('login') }}"><button type="button" class="btn btn-primary">Kaufen</button></a>
+            {% else %}
+            <form action="/payment" method="post">
+                <button class="btn btn-primary" type="submit">Pay with Paypal</button>
+            </form>
+
+            {% endif %}
+
+
+        </div>
+
+    {% endif %}
+
+
+{% endblock %}

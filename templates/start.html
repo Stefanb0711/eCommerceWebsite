@@ -1,0 +1,91 @@
+{%  extends "base.html" %}
+
+
+
+
+{% block content %}
+
+
+<div class="container text-center">
+
+  <div class="row align-items-center">
+      {%  for count in range(products["images"] | length)%}
+          <div class="col-md-4 mb-4">
+
+              <div class="card" style="width: 18rem;">
+                  <img style="padding-right: 10px; padding-left: 10px; padding-top: 10px; padding-bottom: 10px;" src="{{ products['images'][count] }}" class="card-img-top" alt="...">
+                  <div class="card-body">
+                      <h3>{{ products['titles'][count] }}</h3>
+                  </div>
+
+                  <h4 style="padding-bottom: 15px;"> {{ products['prices'][count] }} €</h4>
+
+                  <div style="display: flex; justify-content: center;">
+
+                      <div class="addtocart--quantity">
+
+
+
+
+                  <form method="post" action="{{ url_for('shopping_cart_site') }}">
+
+                        <input type="hidden" name="product_image" value="{{ products['images'][count] }}">
+                        <input type="hidden" name="product_price" value="{{ products['prices'][count] }}">
+                        <input type="hidden" name="product_title" value="{{ products['titles'][count] }}">
+
+                      <div style="display:flex; align-items: center; padding-bottom: 20px;">
+
+                          <label style="padding-right: 10px;" for="qty" class="text--sr">Anzahl:</label>
+
+                       <select style="margin-right: 10px;" name="qty" id="qty" title="Menge" class="qty">
+                            <option value="1" selected="">
+                    1				</option>
+                            <option value="2">
+                    2				</option>
+                            <option value="3">
+                    3				</option>
+                            <option value="4">
+                    4				</option>
+                            <option value="5">
+                    5				</option>
+                            <option value="6">
+                    6				</option>
+                            <option value="7">
+                    7				</option>
+                            <option value="8">
+                    8				</option>
+                            <option value="9">
+                    9				</option>
+                            <option value="10">
+                    10				</option>
+                        <option value="10+">10+</option></select>
+
+
+                        <button type="submit" class="btn btn-primary">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cart" viewBox="0 0 16 16">
+                                  <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5M3.102 4l1.313 7h8.17l1.313-7zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4m7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4m-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2m7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/>
+                              </svg>
+                        </button>
+
+                      </div>
+
+
+                  </form>
+		    </div>
+
+
+
+
+                  </div>
+
+
+
+              </div>
+          </div>
+      {% endfor %}
+
+  </div>
+</div>
+
+
+{% endblock %}
