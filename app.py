@@ -100,7 +100,7 @@ total_price = 0
 
 products = {
     "images" : ["/static/Pics/ProteinPizza.webp", "/static/Pics/ProteinPudding.webp", "/static/Pics/Proteinriegel.jpg", "/static/Pics/ProteinriegelSchwarz.jpg", "/static/Pics/Proteinshake.jpg", "/static/Pics/Proteinspaghetti.webp"],
-    "titles" : ["Protein Pizza", "Protein Pudding", "Proteinriegel, Proteinriegel Schwarz", "Proteinshake", "Protein Spaghetti"],
+    "titles" : ["Protein Pizza", "Protein Pudding", "Proteinriegel", "Proteinriegel Crispy", "Proteinshake", "Protein Spaghetti"],
     "prices" : ["5", "7", "15", "15", "7", "5"]
 
 }

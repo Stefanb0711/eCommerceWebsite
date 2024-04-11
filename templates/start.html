@@ -4,11 +4,26 @@
 
 
 {% block content %}
+    <!-- Startseite-->
+
+        <div class="container col-xxl-10 px-0 py-5">
+            <div class="row flex-lg-row-reverse align-items-center g-5 py-5">
+              <div class="col-10 col-sm-8 col-lg-6">
+                <img src="/static/Pics/Proteinprodukte.jpg" class="d-block mx-auto img-fluid rounded " alt="Bootstrap Themes" width="700" height="500" loading="lazy">
+              </div>
+              <div class="col-lg-6">
+                <h1 style="padding-bottom: 20px;" class="display-5 fw-bold text-body-emphasis lh-1 mb-3">Willkommen in der Welt der Proteine</h1>
+                <p class="lead">Sie denken zum Muskelaufbau gibt es nur Proteinshakes? Falsch gedacht!!! Entdecken Sie unser riesiges Sortiment an Proteinprodukten. Hier ist für jeden Geschmack was dabei.</p>
+
+              </div>
+            </div>
+          </div>
 
 
 <div class="container text-center">
 
   <div class="row align-items-center">
+
       {%  for count in range(products["images"] | length)%}
           <div class="col-md-4 mb-4">
 
@@ -23,9 +38,6 @@
                   <div style="display: flex; justify-content: center;">
 
                       <div class="addtocart--quantity">
-
-
-
 
                   <form method="post" action="{{ url_for('shopping_cart_site') }}">
 
