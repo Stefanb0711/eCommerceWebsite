@@ -10,8 +10,18 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user, UserMixin
+import paypalrestsdk
 
 app = Flask(__name__)
+
+
+paypalrestsdk.configure({
+  "mode": "sandbox",  # Sandbox-Modus für Tests
+  "client_id": "ASl5XdhxFzUG30aRcTsWxk7hIHQlWAG73Jn2OPMIKl92XSmgBPK66_kDyszyoz4n3TwDC4ptvqYlowna",
+  "client_secret": "EHntkt8bW_dpxetvFr6bif2i87OOCwK0nxaLsMHmhq7c9kmzAMYwhnQWhFtlHyJM8EnfQBVTIEHo9-aU"
+})
+
+
 
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///customer.db"
 db = SQLAlchemy()
@@ -21,6 +31,8 @@ db.init_app(app)
 login_manager = LoginManager()
 
 login_manager.init_app(app)
+
+
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -219,38 +231,104 @@ def shopping_cart_site():
 
     print(f"Gesamtpreis: {total_price}")
 
-    #total_price = sum(shopping_cart["product_prices"])
+
+        #Paypalbutton gedrückt
+    
+    """if request.method == "POST":
+        # Betrag und Währung aus dem Formular erhalten
+        amount = total_price
+        currency = "USD"
+
+        # Erstellen Sie ein Zahlungsobjekt mit PayPal
+        payment = paypalrestsdk.Payment({
+            "intent": "sale",
+            "payer": {
+                "payment_method": "paypal"
+            },
+            "transactions": [{
+                "amount": {
+                    "total": amount,
+                    "currency": currency
+                },
+                "description": "Beispielzahlung"
+            }],
+            "redirect_urls": {
+                "return_url": "http://localhost:5000/payment/execute",
+                "cancel_url": "http://localhost:5000/payment/cancel"
+            }
+        })
+
+        # Versuchen Sie, die Zahlung zu erstellen
+        if payment.create():
+            # Erfolgreich erstellt, leiten Sie zur PayPal-Zahlungsseite weiter
+            for link in payment.links:
+                if link.method == "REDIRECT":
+                    return redirect(link.href)
+        else:
+            # Fehler beim Erstellen der Zahlung
+            return str(payment.error)"""
 
 
     return render_template("warenkorb.html", shopping_cart = shopping_cart, total_price = total_price)
 
 
-@app.route("/bezahlen")
-@login_required
-def bezahlen():
 
 
-    print(current_user.id)
 
-    new_order = Order(customer_id = current_user.id, total_sum = total_price)
-    db.session.add(new_order)
-    db.session.commit()
+# Route für die Zahlungsseite
+@app.route('/payment', methods=['GET', 'POST'])
+def payment():
+    global total_price
 
+    if request.method == 'POST':
+        # Betrag und Währung aus dem Formular erhalten
+        amount = total_price
+        currency = "USD"
 
-    this_order = Order.query.order_by(Order.id.desc()).first()
-    print(f"ThsiOrderID: {this_order.id}")
+        # Erstellen Sie ein Zahlungsobjekt mit PayPal
+        payment = paypalrestsdk.Payment({
+            "intent": "sale",
+            "payer": {
+                "payment_method": "paypal"
+            },
+            "transactions": [{
+                "amount": {
+                    "total": amount,
+                    "currency": currency
+                },
+                "description": "Beispielzahlung"
+            }],
+            "redirect_urls": {
+                "return_url": "http://localhost:5000/payment/execute",
+                "cancel_url": "http://localhost:5000/payment/cancel"
+            }
+        })
 
-    for _ in range(len(shopping_cart["product_prices"])):
-        new_product = Products(product_name = shopping_cart["product_titles"][_], product_price = shopping_cart["product_prices"][_], order_id = this_order.id, quantity = shopping_cart["product_amounts"][_])
-        db.session.add(new_product)
-        db.session.commit()
+        # Versuchen Sie, die Zahlung zu erstellen
+        if payment.create():
+            # Erfolgreich erstellt, leiten Sie zur PayPal-Zahlungsseite weiter
+            for link in payment.links:
+                if link.method == "REDIRECT":
+                    return redirect(link.href)
+        else:
+            # Fehler beim Erstellen der Zahlung
+            return str(payment.error)
 
-    shopping_cart["product_images"].clear()
-    shopping_cart["product_prices"].clear()
-    shopping_cart["product_titles"].clear()
-    shopping_cart["product_amounts"].clear()
+    return render_template('payment.html')
 
-    return render_template("bezahlung.html")
+@app.route("/payment/execute")
+def execute_payment():
+    # Bestätigen Sie die Zahlung
+    payment_id = request.args.get('paymentId')
+    payer_id = request.args.get('PayerID')
+
+    payment = paypalrestsdk.Payment.find(payment_id)
+    if payment.execute({"payer_id": payer_id}):
+        # Zahlung erfolgreich ausgeführt
+        return "Zahlung erfolgreich!"
+    else:
+        # Fehler bei der Zahlungsausführung
+        return str(payment.error)
 
 
 @app.route("/logout")
