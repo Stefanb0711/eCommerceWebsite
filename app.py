@@ -24,6 +24,7 @@ paypalrestsdk.configure({
 
 
 
+
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///customer.db"
 db = SQLAlchemy()
 
@@ -289,7 +290,7 @@ def payment():
     if request.method == 'POST':
         # Betrag und Währung aus dem Formular erhalten
         amount = total_price
-        currency = "USD"
+        currency = "EUR"
 
         # Erstellen Sie ein Zahlungsobjekt mit PayPal
         payment = paypalrestsdk.Payment({
@@ -302,7 +303,7 @@ def payment():
                     "total": amount,
                     "currency": currency
                 },
-                "description": "Beispielzahlung"
+                "description": "Zahlung"
             }],
             "redirect_urls": {
                 "return_url": "http://localhost:5000/payment/execute",
@@ -331,11 +332,19 @@ def execute_payment():
     payment = paypalrestsdk.Payment.find(payment_id)
     if payment.execute({"payer_id": payer_id}):
         # Zahlung erfolgreich ausgeführt
-        return "Zahlung erfolgreich!"
+        return redirect(url_for("success"))
     else:
         # Fehler bei der Zahlungsausführung
         return str(payment.error)
 
+
+
+@app.route("/payment_successfull")
+def success():
+
+    if request.method == "POST":
+        return redirect(url_for("start"))
+    return render_template('success.html')
 
 @app.route("/logout")
 @login_required
