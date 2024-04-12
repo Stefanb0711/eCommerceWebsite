@@ -11,14 +11,15 @@ from sqlalchemy.orm import relationship
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user, UserMixin
 import paypalrestsdk
+from dotenv import find_dotenv, load_dotenv
 
 app = Flask(__name__)
 
 
 paypalrestsdk.configure({
   "mode": "sandbox",  # Sandbox-Modus für Tests
-  "client_id": "ASl5XdhxFzUG30aRcTsWxk7hIHQlWAG73Jn2OPMIKl92XSmgBPK66_kDyszyoz4n3TwDC4ptvqYlowna",
-  "client_secret": "EHntkt8bW_dpxetvFr6bif2i87OOCwK0nxaLsMHmhq7c9kmzAMYwhnQWhFtlHyJM8EnfQBVTIEHo9-aU"
+  "client_id": os.getenv("CLIENT_ID"),
+  "client_secret": os.getenv("CLIENT_SECRET")
 })
 
 
@@ -33,6 +34,11 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 
 
+dotenv_path = find_dotenv()
+
+load_dotenv(dotenv_path)
+
+
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -45,7 +51,7 @@ def load_user(user_id):
 
 
 
-app.config['SECRET_KEY'] = 'SECRET'
+app.config['SECRET_KEY'] = os.getenv("SECRET_KEY_APP")
 
 class Customer(UserMixin, db.Model):
     __tablename__ = "customer"

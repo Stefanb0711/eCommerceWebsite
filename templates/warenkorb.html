@@ -4,7 +4,7 @@
 
 
     {% if not current_user.is_authenticated %}
-          <div style="">
+          <div style="padding-top: 60px;padding-bottom: 60px;">
               <a href="{{ url_for('login') }}"><button type="button" class="btn btn-primary">Einloggen</button></a>
               <a href="{{ url_for('register') }}"><button type="button" class="btn btn-light">Registrieren</button></a>
           </div>
@@ -15,14 +15,24 @@
 
     {% else %}
         <ul class="list-group d-flex justify-content-between flex-wrap" style="display: flex; flex-direction: column;">
+
+        <div style="padding-bottom: 30px;">
+            <span style="padding-left:30px; padding-right:100px;" class="flex-fill">Produkt</span>
+            <span style="padding-right:100px;" class="flex-fill">Preis</span>
+            <span style="padding-right:100px;" class="flex-fill">Stückzahl</span>
+        </div>
+
+
         {% for count in range(shopping_cart['product_titles'] | length ) %}
-            <li class="list-group-item d-flex align-items-center">
-                <div>
-                    <span>{{ shopping_cart['product_titles'][count] }}</span>
-                    <span>{{ shopping_cart['product_prices'][count] }}$</span>
-                    <span>{{ shopping_cart["product_amounts"][count] }}</span>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center justify-content-between">
+                    <span style="padding-right:100px;" class="flex-fill">{{ shopping_cart['product_titles'][count] }}</span>
+                    <span style="padding-right:100px;" class="flex-fill">{{ shopping_cart['product_prices'][count] }}$</span>
+                    <span style="padding-right:100px;" class="flex-fill">{{ shopping_cart["product_amounts"][count] }}</span>
+                    <img src="{{ shopping_cart['product_images'][count] }}" width="100">
+
                 </div>
-                <img src="{{ shopping_cart['product_images'][count] }}" width="100">
+
             </li>
         {% endfor %}
         </ul>

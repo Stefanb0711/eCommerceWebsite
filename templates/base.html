@@ -4,6 +4,17 @@
     <meta charset="UTF-8">
     <title>Title</title>
 
+    <style>
+        @font-face {
+            font-family: "Roboto";
+            src: url("static/Fonts/Roboto/Roboto-Regular.ttf")
+        }
+
+        body{
+            font-family: "Roboto", sans-serif;
+        }
+    </style>
+
     {%  block head %}
 
     {% endblock %}
@@ -23,12 +34,6 @@
           <li><a href="{{ url_for('start') }}" class="nav-link px-2 link-secondary">Start</a></li>
         </ul>
 
-
-
-          <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search">
-              <input type="search" class="form-control" placeholder="Search..." aria-label="Search">
-          </form>
-
           {% if not current_user.is_authenticated %}
               <div style="">
                   <a href="{{ url_for('login') }}"><button type="button" class="btn btn-primary">Einloggen</button></a>
@@ -36,8 +41,6 @@
               </div>
           {%  else %}
               <a href="{{ url_for('logout') }}"><button type="button" class="btn btn-primary">Ausloggen</button></a>
-
-
           {% endif %}
 
           <a style="padding-left: 50px;" href="{{ url_for('shopping_cart_site') }}"><button type="button" class="btn btn-primary">

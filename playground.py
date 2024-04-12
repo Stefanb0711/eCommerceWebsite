@@ -1,9 +1,2 @@
-ein_dict = {
-    "Name" : ["Stefan"],
+import os
 
-}
-
-ein_dict["Name"].clear()
-
-
-print(ein_dict["Name"])
