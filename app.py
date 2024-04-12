@@ -241,39 +241,7 @@ def shopping_cart_site():
 
         #Paypalbutton gedrückt
     
-    """if request.method == "POST":
-        # Betrag und Währung aus dem Formular erhalten
-        amount = total_price
-        currency = "USD"
 
-        # Erstellen Sie ein Zahlungsobjekt mit PayPal
-        payment = paypalrestsdk.Payment({
-            "intent": "sale",
-            "payer": {
-                "payment_method": "paypal"
-            },
-            "transactions": [{
-                "amount": {
-                    "total": amount,
-                    "currency": currency
-                },
-                "description": "Beispielzahlung"
-            }],
-            "redirect_urls": {
-                "return_url": "http://localhost:5000/payment/execute",
-                "cancel_url": "http://localhost:5000/payment/cancel"
-            }
-        })
-
-        # Versuchen Sie, die Zahlung zu erstellen
-        if payment.create():
-            # Erfolgreich erstellt, leiten Sie zur PayPal-Zahlungsseite weiter
-            for link in payment.links:
-                if link.method == "REDIRECT":
-                    return redirect(link.href)
-        else:
-            # Fehler beim Erstellen der Zahlung
-            return str(payment.error)"""
 
 
     return render_template("warenkorb.html", shopping_cart = shopping_cart, total_price = total_price)
@@ -339,7 +307,7 @@ def execute_payment():
 
 
 
-@app.route("/payment_successfull")
+@app.route("/payment_successfull", methods=['GET', 'POST'])
 def success():
 
     if request.method == "POST":
